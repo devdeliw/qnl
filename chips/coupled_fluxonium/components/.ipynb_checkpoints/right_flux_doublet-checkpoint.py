@@ -69,10 +69,10 @@ def fluxonium(design, pos_x=0.0, pos_y=0.0, flip=False, name='lower'):
         'right': {'pos_x': c_x + parse_value('70um', Dict()), 'pos_y': c_y, 'orientation': central_orientation}
     }
 
-    otg_cl = ShortToGround(design, f'{name}_cl', options=otg_ops['central'])
-    otg_cr = ShortToGround(design, f'{name}_cr', options=otg_ops['central'])
-    otg_l  = ShortToGround(design, f'{name}_l', options=otg_ops['left'])
-    otg_r  = ShortToGround(design, f'{name}_r', options=otg_ops['right'])
+    otg_cl = ShortToGround(design, f'{name}_doublet_cl', options=otg_ops['central'])
+    otg_cr = ShortToGround(design, f'{name}_doublet_cr', options=otg_ops['central'])
+    otg_l  = ShortToGround(design, f'{name}_doublet_l', options=otg_ops['left'])
+    otg_r  = ShortToGround(design, f'{name}_doublet_r', options=otg_ops['right'])
 
     route_params = Dict(pin_inputs=Dict(
         start_pin=Dict(component=None, pin='short'),
@@ -80,14 +80,14 @@ def fluxonium(design, pos_x=0.0, pos_y=0.0, flip=False, name='lower'):
     ))
     route_params.pin_inputs.start_pin.component = otg_cl.name
     route_params.pin_inputs.end_pin.component = otg_l.name
-    route_left = RouteFramed(design, f'{name}_flux_line_l', route_params)
+    route_left = RouteFramed(design, f'{name}_flux_line_doublet_l', route_params)
 
     route_params.pin_inputs.start_pin.component = otg_cr.name
     route_params.pin_inputs.end_pin.component = otg_r.name
-    route_right = RouteFramed(design, f'{name}_flux_line_r', route_params)
+    route_right = RouteFramed(design, f'{name}_flux_line_doublet_r', route_params)
 
     # Placing Fluxline 
-    orientation = '0' if not flip else '180' 
+    orientation = '180' if not flip else '0' 
     taper_length= '212um' 
     
     options = Dict(
@@ -108,7 +108,7 @@ def fluxonium(design, pos_x=0.0, pos_y=0.0, flip=False, name='lower'):
         route.options.fillet = '2.5um'
 
     # Adding fluxline 
-    fluxline = FluxLine(design, name=f'{name}_flux_line_main', options=options) 
+    fluxline = FluxLine(design, name=f'{name}_flux_line_doublet_main', options=options) 
     fluxline.position('thin_gap_center', (c_x, c_y))
 
     if not flip: 

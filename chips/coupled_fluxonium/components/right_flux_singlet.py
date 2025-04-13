@@ -8,6 +8,7 @@ def right_flux_singlet(design, pos_x=0.0, pos_y=0.0, name='right_singlet'):
     flux = Fluxonium(design)
     flux.options.pos_x = pos_x
     flux.options.pos_y = pos_y
+    flux.options.name = name
     flux.make()
 
     # Claw connects to the side of the qubit

@@ -4,6 +4,7 @@ from qiskit_metal.qlibrary.tlines.straight_path import RouteStraight
 from qiskit_metal.qlibrary.QNLMetal.inlineidc import InlineIDC 
 from qiskit_metal.toolbox_metal.parsing import parse_value 
 from qiskit_metal import Dict 
+import numpy as np
 
 def readout_bus(design, pos_x=0, pos_y=0, name='readout_bus'): 
     idc = InlineIDC(design, options=Dict(pos_x=pos_x, pos_y=pos_y)) 
@@ -42,5 +43,10 @@ def readout_bus(design, pos_x=0, pos_y=0, name='readout_bus'):
             trace_width='30um', 
         ), 
     ) 
+
+    nodes = Dict() 
+    nodes.right = np.array([pos_x+parse_value('15um', Dict())+parse_value('17.5um', Dict()), pos_y]) 
+    nodes.left  = np.array([pos_x-parse_value('15um', Dict())-parse_value('17.5um', Dict()), pos_y]) 
+    return nodes
 
     
