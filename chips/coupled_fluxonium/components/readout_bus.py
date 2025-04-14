@@ -1,5 +1,6 @@
-from qiskit_metal.qlibrary.terminations.open_to_ground import OpenToGround 
+from qiskit_metal.qlibrary.terminations.launchpad_wb import LaunchpadWirebond
 from qiskit_metal.qlibrary.terminations.short_to_ground import ShortToGround
+from qiskit_metal.qlibrary.terminations.open_to_ground import OpenToGround 
 from qiskit_metal.qlibrary.tlines.straight_path import RouteStraight
 from qiskit_metal.qlibrary.QNLMetal.inlineidc import InlineIDC 
 from qiskit_metal.toolbox_metal.parsing import parse_value 
@@ -43,6 +44,20 @@ def readout_bus(design, pos_x=0, pos_y=0, name='readout_bus'):
             trace_width='30um', 
         ), 
     ) 
+    
+    launch_options = {
+        'pos_x': lower_node[0], 
+        'orientation': '90', 
+        'lead_length': '793.5um', 
+        'pad_width'  : '375um', 
+        'pad_height' : '125um', 
+        'taper_height': '100um', 
+        'trace_gap'  : '17.5um', 
+        'trace_width': '30um', 
+    }
+    launch_options['pos_y'] = lower_node[1] - parse_value(launch_options['lead_length'], Dict())
+        
+    launch = LaunchpadWirebond(design, name='launch', options=launch_options) 
 
     nodes = Dict() 
     nodes.right = np.array([pos_x+parse_value('15um', Dict())+parse_value('17.5um', Dict()), pos_y]) 

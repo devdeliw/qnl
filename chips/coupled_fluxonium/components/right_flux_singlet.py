@@ -31,5 +31,6 @@ def right_flux_singlet(design, pos_x=0.0, pos_y=0.0, name='right_singlet'):
     claw_qubit.options.pos_y = left_y
 
     nodes = Dict()
+    nodes.right = flux.node('right')
     nodes.qubit_claw = flux.node('left') 
     return nodes

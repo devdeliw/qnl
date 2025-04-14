@@ -14,8 +14,7 @@ def fluxonium(design, pos_x=0.0, pos_y=0.0, flip=False, name='lower'):
     flux.options.pos_x = pos_x
     flux.options.pos_y = pos_y
     flux.make()
-
-    # Initialize two QNLDraw Claws 
+    
     # One connects to a square pocket 
     # One connects to the side of the qubit
     claw_pocket = Claw(design)
@@ -64,9 +63,21 @@ def fluxonium(design, pos_x=0.0, pos_y=0.0, flip=False, name='lower'):
     c_x, c_y = central_node
 
     otg_ops = {
-        'central': {'pos_x': c_x, 'pos_y': c_y, 'orientation': central_orientation},
-        'left': {'pos_x': c_x - parse_value('70um', Dict()), 'pos_y': c_y, 'orientation': central_orientation},
-        'right': {'pos_x': c_x + parse_value('70um', Dict()), 'pos_y': c_y, 'orientation': central_orientation}
+        'central': {
+            'pos_x': c_x, 
+            'pos_y': c_y, 
+            'orientation': central_orientation
+        },
+        'left': {
+            'pos_x': c_x - parse_value('70um', Dict()), 
+            'pos_y': c_y, 
+            'orientation': central_orientation
+        },
+        'right': {
+            'pos_x': c_x + parse_value('70um', Dict()), 
+            'pos_y': c_y, 
+            'orientation': central_orientation
+        }
     }
 
     otg_cl = ShortToGround(design, f'{name}_doublet_cl', options=otg_ops['central'])
@@ -126,6 +137,9 @@ def fluxonium(design, pos_x=0.0, pos_y=0.0, flip=False, name='lower'):
         pos_x=pos_x, pos_y=pos_y, orientation=orientation))
 
     nodes = Dict() 
+    nodes.right = flux.node('right') 
+    nodes.upper_flux_line_end = flux.node('top') + [0, parse_value(taper_length, Dict())]
+    nodes.lower_flux_line_end = flux.node('bottom') - [0, parse_value(taper_length, Dict())]
     nodes.qubit_claw = flux.node('left')
     nodes.flux_line  = flux.node('top') 
     return nodes 
@@ -143,6 +157,10 @@ def right_flux_doublet(design, pos_x, pos_y):
     connector.options.trace_gap   = '15um'
 
     nodes = Dict() 
+    nodes.upper_right = upper_nodes.right 
+    nodes.lower_right = lower_nodes.right
+    nodes.upper_flux_line_end = upper_nodes.upper_flux_line_end 
+    nodes.lower_flux_line_end = lower_nodes.lower_flux_line_end 
     nodes.upper_flux_line = upper_nodes.flux_line 
     nodes.upper_qubit_claw= upper_nodes.qubit_claw 
     nodes.lower_flux_line = lower_nodes.flux_line 

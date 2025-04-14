@@ -16,7 +16,6 @@ def fluxonium(design, pos_x=0.0, pos_y=0.0, flip=False, name='lower'):
     flux.options.pos_y = pos_y
     flux.make()
 
-    # Initialize two QNLDraw Claws 
     # One connects to a square pocket 
     # One connects to the side of the qubit
     claw_qubit  = Claw(design)
@@ -43,9 +42,21 @@ def fluxonium(design, pos_x=0.0, pos_y=0.0, flip=False, name='lower'):
     c_x, c_y = central_node
 
     otg_ops = {
-        'central': {'pos_x': c_x, 'pos_y': c_y, 'orientation': central_orientation},
-        'left': {'pos_x': c_x - parse_value('70um', Dict()), 'pos_y': c_y, 'orientation': central_orientation},
-        'right': {'pos_x': c_x + parse_value('70um', Dict()), 'pos_y': c_y, 'orientation': central_orientation}
+        'central': {
+            'pos_x': c_x, 
+            'pos_y': c_y, 
+            'orientation': central_orientation
+        },
+        'left': {
+            'pos_x': c_x - parse_value('70um', Dict()), 
+            'pos_y': c_y, 
+            'orientation': central_orientation
+        },
+        'right': {
+            'pos_x': c_x + parse_value('70um', Dict()), 
+            'pos_y': c_y, 
+            'orientation': central_orientation
+        }
     }
 
     otg_cl = ShortToGround(design, f'{name}_cl', options=otg_ops['central'])
@@ -108,6 +119,8 @@ def fluxonium(design, pos_x=0.0, pos_y=0.0, flip=False, name='lower'):
     
 
     nodes = Dict() 
+    nodes.upper_flux_line_end = flux.node('top') + [0, parse_value(taper_length, Dict())]
+    nodes.lower_flux_line_end = flux.node('bottom') - [0, parse_value(taper_length, Dict())]
     nodes.qubit_claw = flux.node('left')
     nodes.flux_line  = flux.node('top') 
     nodes.top        = flux.node('top')
@@ -170,16 +183,21 @@ def central_pad(design, pos_x, pos_y):
     fluxline = FluxLine(design, name=f'left_flux_line_main', options=options) 
     fluxline.position('thin_gap_center', (c_x, c_y))
 
+    nodes = Dict() 
+    nodes.flux_line_end = pad.node('left') - [parse_value(taper_length, Dict()), 0]
+    return nodes
+
 def left_flux_doublet(design, pos_x, pos_y): 
     upper_nodes = fluxonium(design=design, pos_x=pos_x, pos_y=pos_y+0.2625, flip=False, name='upper') 
     lower_nodes = fluxonium(design=design, pos_x=pos_x, pos_y=pos_y-0.2625, flip=True, name='lower') 
+    center_nodes= central_pad(design, upper_nodes.left[0]+0.15, pos_y)
     
-    central_pad(design, upper_nodes.left[0]+0.15, pos_y)
-    
-
-    
-
     nodes = Dict() 
+    nodes.upper_left = upper_nodes.left 
+    nodes.lower_left = lower_nodes.left
+    nodes.upper_flux_line_end = upper_nodes.upper_flux_line_end 
+    nodes.lower_flux_line_end = lower_nodes.lower_flux_line_end 
+    nodes.central_flux_line_end = center_nodes.flux_line_end 
     nodes.upper_flux_line = upper_nodes.flux_line 
     nodes.upper_qubit_claw= upper_nodes.left_qubit_claw 
     nodes.lower_flux_line = lower_nodes.flux_line 
